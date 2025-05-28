@@ -4,24 +4,24 @@ Ein einfacher Java-Service mit Spring Boot, der PDF-Rechnungen nach gesperrten I
 
 ## ✅ Funktionen
 
-* 📥 Akzeptiert eine PDF-URL via REST-API
-* 🔍 Extrahiert Text aus PDF-Dateien (nur "selectable text")
-* 🚫 Prüft, ob gesperrte IBANs im PDF enthalten sind
-* 🧱 Erweiterbar für zusätzliche Prüfungen oder Persistenz
+- 📥 Akzeptiert eine PDF-URL via REST-API
+- 🔍 Extrahiert Text aus PDF-Dateien (nur "selectable text")
+- 🚫 Prüft, ob gesperrte IBANs im PDF enthalten sind
+- 🧱 Erweiterbar für zusätzliche Prüfungen oder Persistenz
 
 ## 🏗️ Technologien
 
-* Java 17+
-* Spring Boot 3+
-* Apache PDFBox
-* Regex für IBAN-Erkennung
+- Java 17+
+- Spring Boot 3+
+- Apache PDFBox
+- Regex für IBAN-Erkennung
 
 ## 🚀 Lokale Ausführung
 
 ### Voraussetzungen
 
-* Java 17
-* Maven
+- Java 17
+- Maven
 
 ### Starten
 
@@ -31,46 +31,52 @@ cd invoice-scanner
 ./mvnw spring-boot:run
 ```
 
-### Beispielaufruf
+### Beispielaufrufe mit `.http` Datei (API Tests)
 
-```bash
-curl -X POST http://localhost:8080/scan \
-  -H "Content-Type: application/json" \
-  -d '{"pdfUrl": "https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice.pdf"}'
-```
-
-### Beispielantwort (OK)
-
-```json
+```http
+### 1. PDF mit blacklisted IBAN scannen
+POST http://localhost:8080/scan
+Content-Type: application/json
 {
-  "status": "OK",
-  "message": "No blacklisted IBANs found."
+  "pdfUrl": "https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice.pdf"
+}
+
+### 2. PDF mit sicherer IBAN scannen (OK)
+POST http://localhost:8080/scan
+Content-Type: application/json
+{
+  "pdfUrl": "https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice-ok.pdf"
+}
+
+### 3. Test mit nicht existierender URL (Fehlerfall)
+POST http://localhost:8080/scan
+Content-Type: application/json
+{
+  "pdfUrl": "https://example.com/does-not-exist.pdf"
+}
+
+### 4. Kein URL übergeben (Validierungsfehler)
+POST http://localhost:8080/scan
+Content-Type: application/json
+{
+  "pdfUrl": ""
 }
 ```
 
-### Beispielantwort (FAILED)
+## 🧪 Testdateien
 
-```json
-{
-  "status": "FAILED",
-  "message": "Blacklisted IBAN found: DE89370400440532013000"
-}
-```
-
-## 🧪 Testdatei
-
-🧾 Beispielrechnung zur Prüfung findest du hier:
-👉 [`invoice.pdf`](https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice.pdf)
+- 🛑 [`invoice.pdf`](https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice.pdf) (mit blacklisted IBAN)
+- ✅ [`invoice-ok.pdf`](https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice-ok.pdf) (sichere IBAN)
 
 ## 🛠 Erweiterungsideen
 
-* ✅ Integration einer persistierenden Datenbank (MongoDB/PostgreSQL)
-* 🧠 Verwendung eines OCR-Moduls (z. B. Tesseract) für nicht-selektierbare Texte
-* 🧾 Scan-Ergebnisse speichern (Audit Trail)
-* 🧪 Unit- und Integrationstests (JUnit + MockMvc)
-* 📑 Unterstützung von Dateiuploads (nicht nur URL)
-* 🔐 Authentifizierung & Rate-Limiting
-* 📤 Frontend-UI mit React oder Angular
+- ✅ Integration einer persistierenden Datenbank (MongoDB/PostgreSQL)
+- 🧠 Verwendung eines OCR-Moduls (z. B. Tesseract) für nicht-selektierbare Texte
+- 🧾 Scan-Ergebnisse speichern (Audit Trail)
+- 🧪 Unit- und Integrationstests (JUnit + MockMvc)
+- 📑 Unterstützung von Dateiuploads (nicht nur URL)
+- 🔐 Authentifizierung & Rate-Limiting
+- 📤 Frontend-UI mit React oder Angular
 
 ## 📄 Beispielhafte Blacklist (fest kodiert)
 
@@ -84,10 +90,11 @@ List.of(
 
 ## 📚 Hinweise
 
-* IBANs werden via Regex erkannt: `[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}`
-* PDF-Inhalte müssen "selectable" sein (kein gescanntes Bild)
+- IBANs werden via Regex erkannt: `[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}`
+- PDF-Inhalte müssen "selectable" sein (kein gescanntes Bild)
 
 ## 📬 Kontakt
 
 Erstellt von [Duc Thanh Nguyen](https://github.com/thanhtuanh)
+
 
