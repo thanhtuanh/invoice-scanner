@@ -66,14 +66,10 @@ Content-Type: application/json
 ## 🧪 Testdateien
 
 - 🛑 [`invoice.pdf`](https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice.pdf) (mit blacklisted IBAN)  
-  <a href="https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice.pdf" target="_blank">
-    <img src="https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice.pdf" width="200" alt="Vorschau invoice.pdf" />
-  </a>
+
 
 - ✅ [`invoice-ok.pdf`](https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice-ok.pdf) (sichere IBAN)  
-  <a href="https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice-ok.pdf" target="_blank">
-    <img src="https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice-ok.pdf" width="200" alt="Vorschau invoice-ok.pdf" />
-  </a>
+
 
 ## 🛠 Erweiterungsideen
 
