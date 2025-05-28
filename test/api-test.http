@@ -6,6 +6,8 @@ Content-Type: application/json
   "pdfUrl": "https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice.pdf"
 }
 
+
+
 ### 2. PDF mit sicherer IBAN scannen (OK)
 POST http://localhost:8080/scan
 Content-Type: application/json
