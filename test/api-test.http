@@ -1,0 +1,23 @@
+### 1. PDF mit blacklisted IBAN scannen
+POST http://localhost:8080/scan
+Content-Type: application/json
+
+{
+  "pdfUrl": "https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice.pdf"
+}
+
+### 2. Test mit nicht existierender URL (Fehlerfall)
+POST http://localhost:8080/scan
+Content-Type: application/json
+
+{
+  "pdfUrl": "https://example.com/does-not-exist.pdf"
+}
+
+### 3. Kein URL übergeben (Validierungsfehler)
+POST http://localhost:8080/scan
+Content-Type: application/json
+
+{
+  "pdfUrl": ""
+}

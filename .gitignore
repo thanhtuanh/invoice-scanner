@@ -1,0 +1,45 @@
+# OS: macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# macOS metadata
+Icon?
+._*
+
+# Spotlight
+.Spotlight-V100
+.Trashes
+
+# Maven
+/target/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# Java
+*.class
+
+# Env
+.env
+
+# Package builds
+*.jar
+*.war
+*.zip
+
+# Output/Test Files
+invoice.pdf
+
+# Swap/Temp
+*.swp
+*.swo
