@@ -38,7 +38,7 @@ Icon?
 *.zip
 
 # Output/Test Files
-#invoice.pdf
+invoice.pdf
 
 # Swap/Temp
 *.swp
