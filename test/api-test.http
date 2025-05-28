@@ -6,7 +6,17 @@ Content-Type: application/json
   "pdfUrl": "https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice.pdf"
 }
 
-### 2. Test mit nicht existierender URL (Fehlerfall)
+### 2. PDF mit sicherer IBAN scannen (OK)
+POST http://localhost:8080/scan
+Content-Type: application/json
+
+{
+  "pdfUrl": "https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice-ok.pdf"
+}
+
+
+
+### 3. Test mit nicht existierender URL (Fehlerfall)
 POST http://localhost:8080/scan
 Content-Type: application/json
 
@@ -14,7 +24,7 @@ Content-Type: application/json
   "pdfUrl": "https://example.com/does-not-exist.pdf"
 }
 
-### 3. Kein URL übergeben (Validierungsfehler)
+### 4. Kein URL übergeben (Validierungsfehler)
 POST http://localhost:8080/scan
 Content-Type: application/json
 
