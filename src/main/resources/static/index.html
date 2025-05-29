@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice Scanner Service</title>
+  <style>
+    body { font-family: sans-serif; max-width: 960px; margin: 2rem auto; line-height: 1.6; }
+    h1, h2, h3 { color: #333; }
+    pre { background: #f4f4f4; padding: 1em; border-left: 4px solid #ccc; overflow-x: auto; }
+    code { font-family: monospace; color: #005; }
+    a { color: #0645ad; }
+  </style>
+</head>
+<body>
+  <h1>📄 Invoice Scanner Service</h1>
+  <p>Ein Java-Service mit Spring Boot, der PDF-Rechnungen auf gesperrte IBANs prüft – zur Vorbeugung von Geldwäsche durch automatische Dokumentenanalyse.</p>
+
+  <h2>✅ Funktionen</h2>
+  <ul>
+    <li>📥 PDF-URL via REST-API senden</li>
+    <li>🔍 Extraktion von Text mit Apache PDFBox</li>
+    <li>🚫 Prüfung auf gesperrte IBANs</li>
+    <li>🔁 Antwort mit Status OK, FAILED oder ERROR</li>
+    <li>🧪 Getestet mit JUnit + MockMvc</li>
+  </ul>
+
+  <h2>🧪 Testaufrufe mit <code>curl</code></h2>
+
+  <h3>1. PDF mit <strong>blacklisted IBAN</strong> scannen</h3>
+  <pre><code>curl -X POST https://invoice-scanner-service.onrender.com/scan \
+  -H "Content-Type: application/json" \
+  -d '{"pdfUrl": "https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice.pdf"}'</code></pre>
+
+  <h3>2. PDF mit <strong>sicherer IBAN</strong> scannen</h3>
+  <pre><code>curl -X POST https://invoice-scanner-service.onrender.com/scan \
+  -H "Content-Type: application/json" \
+  -d '{"pdfUrl": "https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice-ok.pdf"}'</code></pre>
+
+  <h3>3. Fehlerfall: Nicht existierende URL</h3>
+  <pre><code>curl -X POST https://invoice-scanner-service.onrender.com/scan \
+  -H "Content-Type: application/json" \
+  -d '{"pdfUrl": "https://example.com/does-not-exist.pdf"}'</code></pre>
+
+  <h3>4. Fehlerfall: Leere URL</h3>
+  <pre><code>curl -X POST https://invoice-scanner-service.onrender.com/scan \
+  -H "Content-Type: application/json" \
+  -d '{"pdfUrl": ""}'</code></pre>
+
+  <h2>📚 Hinweise</h2>
+  <ul>
+    <li>IBANs werden per Regex erkannt: <code>[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}</code></li>
+    <li>PDFs müssen "selectable text" enthalten – keine gescannten Bilder</li>
+  </ul>
+
+  <hr>
+  <p>Erstellt von <a href="https://github.com/thanhtuanh" target="_blank">Duc Thanh Nguyen</a> – <a href="https://github.com/thanhtuanh/bewerbung" target="_blank">🔗 GitHub-Portfolio</a></p>
+</body>
+</html>
