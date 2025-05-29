@@ -1,6 +1,7 @@
+# Konfiguration des eingebetteten Webservers (Tomcat)
 server:
-  port: 8080
+  port: 8080  # Die Anwendung läuft lokal auf Port 8080
 
 spring:
   application:
-    name: invoice-scanner
+    name: invoice-scanner  # Name der Spring Boot Anwendung (wird z.B. in Logs angezeigt)

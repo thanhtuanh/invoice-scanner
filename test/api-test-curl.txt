@@ -1,0 +1,19 @@
+# 1. PDF mit blacklisted IBAN scannen
+curl -X POST http://localhost:8080/scan \
+  -H "Content-Type: application/json" \
+  -d '{"pdfUrl": "https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice.pdf"}'
+
+# 2. PDF mit sicherer IBAN scannen
+curl -X POST http://localhost:8080/scan \
+  -H "Content-Type: application/json" \
+  -d '{"pdfUrl": "https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice-ok.pdf"}'
+
+# 3. Test mit nicht existierender URL
+curl -X POST http://localhost:8080/scan \
+  -H "Content-Type: application/json" \
+  -d '{"pdfUrl": "https://example.com/does-not-exist.pdf"}'
+
+# 4. Kein URL übergeben
+curl -X POST http://localhost:8080/scan \
+  -H "Content-Type: application/json" \
+  -d '{"pdfUrl": ""}'
