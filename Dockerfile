@@ -1,12 +1,13 @@
-# Verwende offizielles Java 17 Image
-FROM eclipse-temurin:17-jdk
-
-# Arbeitsverzeichnis im Container
+# Stage 1: Build
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
-
-# Baue die App mit Maven Wrapper
 COPY . .
-RUN ./mvnw clean package -DskipTests
+RUN mvn clean package -DskipTests
 
-# Starte das .jar
-CMD ["java", "-jar", "target/invoice-scanner-0.0.1-SNAPSHOT.jar"]
+# Stage 2: Runtime
+FROM eclipse-temurin:17-jdk
+WORKDIR /app
+COPY --from=build /app/target/invoice-scanner-0.0.1-SNAPSHOT.jar app.jar
+
+EXPOSE 8080
+CMD ["java", "-jar", "app.jar"]
