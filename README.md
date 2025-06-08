@@ -24,7 +24,7 @@ curl -X POST https://invoice-scanner-service.onrender.com/scan \
 - 🚫 Prüft auf gesperrte IBANs (Blacklist)
 - 🔁 Liefert API-Status: OK, FAILED, ERROR
 - 🧱 Erweiterbar für zusätzliche Prüfregeln und Persistenz
-- 🧪 Getestet mit Unit- und Integrationstests (JUnit + MockMvc)
+- 🧪 Getestet mit Unit- und Integrationstests (JUnit + MockMvc +  Spring Boot Test)
 - 📝 Logging via SLF4J/Logback (inkl. Stacktrace bei Fehlern)
 
 ---
