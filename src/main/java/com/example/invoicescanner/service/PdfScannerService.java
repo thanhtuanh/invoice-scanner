@@ -20,8 +20,8 @@ public class PdfScannerService {
      */
     public String extractTextFromPdf(String url) throws IOException {
         try (
-            InputStream in = new URL(url).openStream(); // öffnet HTTP-Stream zur URL
-            PDDocument document = PDDocument.load(in)  // lädt das PDF-Dokument
+                InputStream in = new URL(url).openStream(); // öffnet HTTP-Stream zur URL
+                PDDocument document = PDDocument.load(in) // lädt das PDF-Dokument
         ) {
             PDFTextStripper stripper = new PDFTextStripper(); // Werkzeug zum Textextrahieren
             return stripper.getText(document); // gibt extrahierten Text zurück

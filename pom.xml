@@ -1,71 +1,141 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <!-- Das <project>-Element ist das Wurzelelement jeder Maven-POM-Datei. -->
+    <!-- Die xmlns-Attribute definieren die XML-Namespaces und das Schema für die Datei, 
+         was für die XML-Validierung und den Editor-Support wichtig ist. -->
+    
     <modelVersion>4.0.0</modelVersion>
+    <!-- Gibt die Version des Maven-POM-Modells an, das diese Datei verwendet. 
+         Die Version 4.0.0 ist die aktuelle und gängige Version. -->
 
     <groupId>com.example</groupId>
+    <!-- Die <groupId> identifiziert Ihr Projekt eindeutig innerhalb einer Organisation. 
+         Es ist die Konvention, eine umgekehrte Domain-Namen-Struktur zu verwenden (z.B. com.yourcompany.project). -->
     <artifactId>invoice-scanner</artifactId>
+    <!-- Die <artifactId> ist der Name des JAR-Archivs, das ohne Versionsnummer erstellt wird. 
+         Sie ist der Name des Moduls oder der Anwendung. -->
     <version>0.0.1-SNAPSHOT</version>
+    <!-- Die <version> des Projekts. "SNAPSHOT" zeigt an, dass es sich um eine Entwicklungsversion handelt, 
+         die noch nicht final veröffentlicht wurde. -->
     <name>Invoice Scanner</name>
+    <!-- Ein menschenlesbarer Name für das Projekt. -->
     <description>REST-Service zum Erkennen von blacklisted IBANs in PDFs</description>
+    <!-- Eine kurze Beschreibung des Projekts. Dies hilft, den Zweck der Anwendung zu verstehen. -->
 
     <properties>
+        <!-- Das <properties>-Element ermöglicht es, Variablen zu definieren, 
+             die an anderer Stelle in der POM wiederverwendet werden können. 
+             Dies fördert die Konsistenz und erleichtert Versions-Updates. -->
         <java.version>17</java.version>
+        <!-- Definiert die Java-Version, die für das Projekt verwendet werden soll. 
+             In diesem Fall Java 17. -->
         <spring.boot.version>3.2.0</spring.boot.version>
+        <!-- Definiert die Version von Spring Boot, die in diesem Projekt verwendet wird. 
+             Dies stellt sicher, dass alle Spring Boot-Abhängigkeiten dieselbe Version verwenden. -->
     </properties>
 
     <dependencies>
+        <!-- Das <dependencies>-Element enthält eine Liste aller Bibliotheken (Abhängigkeiten), 
+             die Ihr Projekt zum Kompilieren, Testen oder zur Laufzeit benötigt. -->
+
         <!-- Spring Boot Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <!-- Der 'spring-boot-starter-web' ist ein "Starter"-Modul von Spring Boot. 
+                 Er zieht alle gängigen Abhängigkeiten herein, die für die Entwicklung von 
+                 Webanwendungen, einschließlich RESTful Services, benötigt werden (z.B. Spring MVC, Tomcat als Embedded Server). -->
             <version>${spring.boot.version}</version>
+            <!-- Verwendet die oben in <properties> definierte Spring Boot-Version. -->
         </dependency>
 
         <!-- Apache PDFBox -->
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
+            <!-- Dies ist die Hauptabhängigkeit für Apache PDFBox. 
+                 Diese Bibliothek wird verwendet, um PDF-Dokumente zu lesen und Text daraus zu extrahieren, 
+                 was eine Kernanforderung der Coding Challenge ist. -->
             <version>2.0.27</version>
+            <!-- Die spezifische Version von PDFBox, die verwendet wird. -->
         </dependency>
 
         <!-- Lombok (optional) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <!-- Lombok ist eine beliebte Bibliothek, die die Menge an Boilerplate-Code 
+                 (z.B. Getter, Setter, Konstruktoren, hashCode, equals) in Java-Klassen reduziert, 
+                 indem sie zur Kompilierungszeit Code generiert. -->
             <version>1.18.30</version>
+            <!-- Die spezifische Version von Lombok. -->
             <scope>provided</scope>
+            <!-- Der <scope>provided</scope> bedeutet, dass die Abhängigkeit zur Kompilierungs- und Testzeit 
+                 benötigt wird, aber zur Laufzeit (z.B. im Servlet-Container oder beim Ausführen des JARs) 
+                 von der Laufzeitumgebung bereitgestellt wird. Für Lombok ist dies typisch, 
+                 da es nur während der Kompilierung Code generiert. -->
         </dependency>
 
         <!-- Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <!-- Der 'spring-boot-starter-test' ist ein weiterer Spring Boot Starter, 
+                 der alle notwendigen Abhängigkeiten für Unit- und Integrationstests bereitstellt 
+                 (z.B. JUnit 5, Mockito, Spring Test). -->
             <version>${spring.boot.version}</version>
+            <!-- Verwendet die definierte Spring Boot-Version. -->
             <scope>test</scope>
+            <!-- Der <scope>test</scope> bedeutet, dass diese Abhängigkeit nur während der Testphase 
+                 des Build-Lebenszyklus benötigt wird. Sie wird nicht in das finale JAR-Paket aufgenommen. -->
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+            <!-- Logback Classic ist eine Implementierung des SLF4J (Simple Logging Facade for Java) APIs. 
+                 Es wird für die Protokollierung (Logging) von Ereignissen in der Anwendung verwendet. 
+                 Dies ist standardmäßig Teil von 'spring-boot-starter-web', kann aber hier explizit 
+                 in einer bestimmten Version angegeben werden, falls nötig. -->
             <version>1.4.14</version>
+            <!-- Die spezifische Version von Logback Classic. -->
         </dependency>
     </dependencies>
 
     <build>
+        <!-- Das <build>-Element konfiguriert den Build-Prozess des Projekts. -->
         <plugins>
+            <!-- Das <plugins>-Element enthält eine Liste von Maven-Plugins, 
+                 die während des Build-Prozesses ausgeführt werden. -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <!-- Das 'spring-boot-maven-plugin' ist das Herzstück des Spring Boot-Build-Prozesses 
+                     für Maven-Projekte. Es bietet eine Reihe von Funktionen, 
+                     insbesondere das Erstellen einer ausführbaren "fat JAR". -->
                 <version>${spring.boot.version}</version>
+                <!-- Verwendet die definierte Spring Boot-Version. -->
                 <executions>
+                    <!-- Definiert, wann und wie das Plugin ausgeführt werden soll. -->
                     <execution>
                         <goals>
                             <goal>repackage</goal> <!-- wichtig! -->
+                            <!-- Das 'repackage'-Goal ist das wichtigste Ziel dieses Plugins. 
+                                 Es nimmt das von Maven erstellte Standard-JAR und packt es neu, 
+                                 um ein eigenständiges, ausführbares JAR zu erstellen. 
+                                 Dieses "fat JAR" enthält alle Abhängigkeiten der Anwendung 
+                                 und einen eingebetteten Webserver (wie Tomcat), 
+                                 sodass es direkt mit 'java -jar your-app.jar' ausgeführt werden kann. 
+                                 Dies ist ideal für Docker-Deployments. -->
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
+                    <!-- Konfiguriert das Plugin. -->
                     <mainClass>com.example.invoicescanner.InvoiceScannerApplication</mainClass>
+                    <!-- Definiert die Hauptklasse der Anwendung, die den 'main'-Methode enthält 
+                         und als Startpunkt für das ausführbare JAR dient. 
+                         Dies ist die Klasse mit der Spring Boot @SpringBootApplication-Annotation. -->
                 </configuration>
             </plugin>
         </plugins>
