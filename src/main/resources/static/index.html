@@ -1,99 +1,794 @@
 <!DOCTYPE html>
 <html lang="de">
-
 <head>
-    <meta charset="UTF-8">
-    <title>Invoice Scanner Service</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            max-width: 960px;
-            margin: 2rem auto;
-            line-height: 1.6;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Invoice Scanner Service – Übersicht & Simulation</title>
 
-        h1,
-        h2,
-        h3 {
-            color: #333;
-        }
+  <!-- Tailwind / Icons / Chart.js -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js"></script>
 
-        pre {
-            background: #f4f4f4;
-            padding: 1em;
-            border-left: 4px solid #ccc;
-            overflow-x: auto;
-        }
-
-        code {
-            font-family: monospace;
-            color: #005;
-        }
-
-        a {
-            color: #0645ad;
-        }
-    </style>
+  <style>
+    .chart-container { min-height:250px; max-height:400px; margin-bottom:1rem; position:relative; }
+    .pipeline-step { transition: all .3s ease; }
+    .pipeline-step.active { background-color:#3b82f6; color:#fff; transform:scale(1.03); }
+    .pipeline-step.completed { background-color:#10b981; color:#fff; }
+    .pipeline-step.error { background-color:#ef4444; color:#fff; }
+    .fade-enter { opacity:0; transform: translateY(6px); }
+    .fade-enter-active { opacity:1; transform: translateY(0); transition: all .25s ease; }
+    .copy-btn { position:absolute; top:.5rem; right:.5rem; }
+    pre code { white-space: pre; }
+  </style>
 </head>
+<body class="bg-gray-50 min-h-screen text-gray-800">
+  <!-- NAV -->
+  <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex items-center justify-between h-14">
+        <div class="flex items-center gap-3">
+          <i data-lucide="file-search" class="w-5 h-5 text-blue-600"></i>
+          <span class="font-semibold">Invoice Scanner Service</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="tab-overview" class="px-3 py-1.5 rounded-md text-sm font-medium bg-blue-600 text-white">Übersicht</button>
+          <button id="tab-sim" class="px-3 py-1.5 rounded-md text-sm font-medium hover:bg-gray-100">Simulation</button>
+          <a href="https://github.com/thanhtuanh/bewerbung" target="_blank" class="ml-2 inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm border hover:bg-gray-50">
+            <i data-lucide="github" class="w-4 h-4"></i> Portfolio
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
 
-<body>
-    <h1>📄 Invoice Scanner Service</h1>
-    <p>Ein Java-Service mit Spring Boot, der PDF-Rechnungen auf gesperrte IBANs prüft – zur Vorbeugung von Geldwäsche
-        durch automatische Dokumentenanalyse.</p>
+  <!-- MAIN WRAPPER -->
+  <main class="max-w-6xl mx-auto px-4 py-8">
 
-    <h2>✅ Funktionen</h2>
-    <ul>
-        <li>📥 PDF-URL via REST-API senden</li>
-        <li>🔍 Extraktion von Text mit Apache PDFBox</li>
-        <li>🚫 Prüfung auf gesperrte IBANs</li>
-        <li>🔁 Antwort mit Status OK, FAILED oder ERROR</li>
-        <li>🧪 Getestet mit JUnit + MockMvc</li>
-    </ul>
+    <!-- =============== SECTION 1: ÜBERSICHT (Index/Doku) =============== -->
+    <section id="section-overview" class="fade-enter fade-enter-active">
+      <!-- Header -->
+      <header class="text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold mb-3">📄 Invoice Scanner Service – Übersicht</h1>
+        <p class="text-gray-600 max-w-3xl mx-auto">
+          Java / Spring Boot Service, der PDF-Rechnungen analysiert, IBANs extrahiert und gegen eine Blacklist prüft.
+          Ideal zur Prävention von Fehlüberweisungen und Geldwäsche-Risiken.
+        </p>
+      </header>
 
-    <h2>🧪 Testaufrufe mit <code>curl</code></h2>
+      <!-- Features -->
+      <div class="grid md:grid-cols-2 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+            <i data-lucide="check-circle-2" class="w-5 h-5 text-green-600"></i> Funktionen
+          </h2>
+          <ul class="space-y-2 text-gray-700">
+            <li>📥 PDF-URL via REST-API senden</li>
+            <li>🔍 Textextraktion mit Apache PDFBox</li>
+            <li>🚫 Abgleich gegen Blacklist-IBANs</li>
+            <li>🔁 Antwortstatus: <code class="bg-gray-100 px-1 rounded">OK</code>, <code class="bg-gray-100 px-1 rounded">FAILED</code> (Blacklist) oder <code class="bg-gray-100 px-1 rounded">ERROR</code></li>
+            <li>🧪 Tests mit JUnit & MockMvc</li>
+          </ul>
+        </div>
 
-    <h3>1. PDF mit <strong>blacklisted IBAN</strong> scannen</h3>
-    <pre><code>curl -X POST https://invoice-scanner-service.onrender.com/scan \
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+            <i data-lucide="link" class="w-5 h-5 text-blue-600"></i> Beispiel-PDFs
+          </h2>
+          <ul class="space-y-3 text-gray-700">
+            <li>
+              🛑 <strong>Blacklist-IBAN enthalten:</strong><br>
+              <a class="text-blue-600 underline" href="https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice.pdf" target="_blank">
+                invoice.pdf</a>
+            </li>
+            <li>
+              ✅ <strong>Sichere IBAN:</strong><br>
+              <a class="text-blue-600 underline" href="https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice-ok.pdf" target="_blank">
+                invoice-ok.pdf</a>
+            </li>
+          </ul>
+          <p class="text-sm text-gray-500 mt-4">Hinweis: PDFs sollten „selectable text“ enthalten (keine reinen Scans ohne OCR).</p>
+        </div>
+      </div>
+
+      <!-- cURL calls -->
+      <div class="bg-white rounded-lg shadow p-6 mb-8">
+        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+          <i data-lucide="terminal" class="w-5 h-5 text-gray-700"></i> Testaufrufe mit <code class="bg-gray-100 px-1 rounded">curl</code>
+        </h2>
+
+        <div class="space-y-6">
+          <!-- 1 -->
+          <div class="relative">
+            <h3 class="font-semibold mb-2">1) PDF mit <strong>blacklisted IBAN</strong> scannen</h3>
+            <button class="copy-btn px-2 py-1 text-xs border rounded hover:bg-gray-50" data-copy="#curl1">Kopieren</button>
+            <pre class="bg-gray-50 p-3 rounded border"><code id="curl1">curl -X POST https://invoice-scanner-service.onrender.com/scan \
   -H "Content-Type: application/json" \
   -d '{"pdfUrl": "https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice.pdf"}'</code></pre>
+          </div>
 
-    <h3>2. PDF mit <strong>sicherer IBAN</strong> scannen</h3>
-    <pre><code>curl -X POST https://invoice-scanner-service.onrender.com/scan \
+          <!-- 2 -->
+          <div class="relative">
+            <h3 class="font-semibold mb-2">2) PDF mit <strong>sicherer IBAN</strong> scannen</h3>
+            <button class="copy-btn px-2 py-1 text-xs border rounded hover:bg-gray-50" data-copy="#curl2">Kopieren</button>
+            <pre class="bg-gray-50 p-3 rounded border"><code id="curl2">curl -X POST https://invoice-scanner-service.onrender.com/scan \
   -H "Content-Type: application/json" \
   -d '{"pdfUrl": "https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice-ok.pdf"}'</code></pre>
+          </div>
 
-    <h3>3. Fehlerfall: Nicht existierende URL</h3>
-    <pre><code>curl -X POST https://invoice-scanner-service.onrender.com/scan \
+          <!-- 3 -->
+          <div class="relative">
+            <h3 class="font-semibold mb-2">3) Fehlerfall: Nicht existierende URL</h3>
+            <button class="copy-btn px-2 py-1 text-xs border rounded hover:bg-gray-50" data-copy="#curl3">Kopieren</button>
+            <pre class="bg-gray-50 p-3 rounded border"><code id="curl3">curl -X POST https://invoice-scanner-service.onrender.com/scan \
   -H "Content-Type: application/json" \
   -d '{"pdfUrl": "https://example.com/does-not-exist.pdf"}'</code></pre>
+          </div>
 
-    <h3>4. Fehlerfall: Leere URL</h3>
-    <pre><code>curl -X POST https://invoice-scanner-service.onrender.com/scan \
+          <!-- 4 -->
+          <div class="relative">
+            <h3 class="font-semibold mb-2">4) Fehlerfall: Leere URL</h3>
+            <button class="copy-btn px-2 py-1 text-xs border rounded hover:bg-gray-50" data-copy="#curl4">Kopieren</button>
+            <pre class="bg-gray-50 p-3 rounded border"><code id="curl4">curl -X POST https://invoice-scanner-service.onrender.com/scan \
   -H "Content-Type: application/json" \
   -d '{"pdfUrl": ""}'</code></pre>
+          </div>
+        </div>
 
-    <h2>📂 Beispielhafte Testdateien</h2>
-    <ul>
-        <li>🛑 <strong>PDF mit gesperrter IBAN:</strong><br>
-            <a href="https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice.pdf" target="_blank">
-                invoice.pdf</a> – enthält eine bekannte IBAN aus der Blacklist
-        </li>
-        <li>✅ <strong>PDF mit gültiger IBAN:</strong><br>
-            <a href="https://github.com/thanhtuanh/invoice-scanner/raw/main/invoice-ok.pdf" target="_blank">
-                invoice-ok.pdf</a> – enthält eine sichere (nicht blockierte) IBAN
-        </li>
-    </ul>
+        <div class="mt-6 text-sm text-gray-700">
+          <p><strong>Regex für IBAN-Erkennung:</strong> <code class="bg-gray-100 px-1 rounded">[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}</code></p>
+        </div>
+      </div>
 
+      <!-- Footer -->
+      <footer class="text-center text-sm text-gray-500">
+        Erstellt von <a class="text-blue-600 underline" href="https://github.com/thanhtuanh" target="_blank">Duc Thanh Nguyen</a> ·
+        <a class="text-blue-600 underline" href="https://github.com/thanhtuanh/bewerbung" target="_blank">🔗 GitHub-Portfolio</a>
+      </footer>
+    </section>
 
-    <h2>📚 Hinweise</h2>
-    <ul>
-        <li>IBANs werden per Regex erkannt: <code>[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}</code></li>
-        <li>PDFs müssen "selectable text" enthalten – keine gescannten Bilder</li>
-    </ul>
+    <!-- =============== SECTION 2: SIMULATION (interaktiv) =============== -->
+    <section id="section-sim" class="hidden">
+      <!-- Header -->
+      <header class="mb-10 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold mb-3">🧪 Interaktive Simulation: Invoice Scanner Service</h2>
+        <p class="text-gray-600 max-w-3xl mx-auto">
+          Erleben Sie den kompletten Pipeline-Ablauf vom PDF-Download bis zur Blacklist-Prüfung – mit steuerbaren Parametern und Live-Metriken.
+        </p>
+      </header>
 
-    <hr>
-    <p>Erstellt von <a href="https://github.com/thanhtuanh" target="_blank">Duc Thanh Nguyen</a> – <a
-            href="https://github.com/thanhtuanh/bewerbung" target="_blank">🔗 GitHub-Portfolio</a></p>
+      <!-- Hook -->
+      <section class="bg-blue-50 rounded-lg p-6 mb-8 border-l-4 border-blue-500">
+        <h3 class="text-2xl font-semibold mb-2">Die Herausforderung</h3>
+        <p class="text-gray-700">
+          <strong>Wie stellen wir sicher, dass automatisierte Zahlungen nicht auf gesperrte IBANs gehen?</strong> Die Simulation zeigt Verfahren und Architektur.
+        </p>
+      </section>
+
+      <!-- Main Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <!-- Controls -->
+        <div class="lg:col-span-1 bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-xl font-semibold mb-4 flex items-center"><i data-lucide="settings" class="w-5 h-5 mr-2"></i> Parameter</h3>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">PDF URL</label>
+              <input type="text" id="pdfUrl" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                     value="https://example.com/rechnung.pdf" placeholder="PDF-URL eingeben">
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Max. PDF-Größe (MB)</label>
+              <input type="range" id="maxPdfSize" min="1" max="20" value="10" class="w-full">
+              <div class="flex justify-between text-xs text-gray-500">
+                <span>1 MB</span><span id="maxPdfSizeValue">10 MB</span><span>20 MB</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Timeout (Sekunden)</label>
+              <input type="range" id="timeout" min="5" max="30" value="10" class="w-full">
+              <div class="flex justify-between text-xs text-gray-500">
+                <span>5s</span><span id="timeoutValue">10s</span><span>30s</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">IBAN-Validierung</label>
+              <div class="flex items-center gap-4">
+                <label class="inline-flex items-center">
+                  <input type="checkbox" id="regexCheck" checked class="rounded text-blue-600 focus:ring-blue-500">
+                  <span class="ml-2 text-sm">Regex-Prüfung</span>
+                </label>
+                <label class="inline-flex items-center">
+                  <input type="checkbox" id="checksumCheck" checked class="rounded text-blue-600 focus:ring-blue-500">
+                  <span class="ml-2 text-sm">Checksumme</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Blacklist-IBANs</label>
+              <textarea id="blacklistIbans" rows="3" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">DE44500105175407324931
+DE89370400440532013000</textarea>
+            </div>
+
+            <button id="runSimulation" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-md transition flex items-center justify-center">
+              <i data-lucide="play" class="w-4 h-4 mr-2"></i> Simulation starten
+            </button>
+            <button id="resetSimulation" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 rounded-md transition flex items-center justify-center">
+              <i data-lucide="refresh-cw" class="w-4 h-4 mr-2"></i> Zurücksetzen
+            </button>
+          </div>
+        </div>
+
+        <!-- Pipeline -->
+        <div class="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-xl font-semibold mb-4 flex items-center">
+            <i data-lucide="git-branch" class="w-5 h-5 mr-2"></i> Verarbeitungspipeline
+          </h3>
+
+          <div class="space-y-4">
+            <div id="pipeline" class="space-y-3">
+              <div class="pipeline-step flex items-center p-3 bg-gray-100 rounded-lg" data-step="1">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center mr-3">1</div>
+                <div class="flex-grow">
+                  <h4 class="font-medium">PDF-Download</h4>
+                  <p class="text-sm text-gray-600">Laden der PDF von der URL</p>
+                </div>
+                <div class="step-status text-sm font-medium"></div>
+              </div>
+
+              <div class="pipeline-step flex items-center p-3 bg-gray-100 rounded-lg" data-step="2">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center mr-3">2</div>
+                <div class="flex-grow">
+                  <h4 class="font-medium">Text-Extraktion</h4>
+                  <p class="text-sm text-gray-600">Extrahieren von Text mit PDFBox</p>
+                </div>
+                <div class="step-status text-sm font-medium"></div>
+              </div>
+
+              <div class="pipeline-step flex items-center p-3 bg-gray-100 rounded-lg" data-step="3">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center mr-3">3</div>
+                <div class="flex-grow">
+                  <h4 class="font-medium">IBAN-Erkennung</h4>
+                  <p class="text-sm text-gray-600">Finden von IBAN-Kandidaten mit Regex</p>
+                </div>
+                <div class="step-status text-sm font-medium"></div>
+              </div>
+
+              <div class="pipeline-step flex items-center p-3 bg-gray-100 rounded-lg" data-step="4">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center mr-3">4</div>
+                <div class="flex-grow">
+                  <h4 class="font-medium">IBAN-Validierung</h4>
+                  <p class="text-sm text-gray-600">Prüfung mit Mod-97 Checksumme</p>
+                </div>
+                <div class="step-status text-sm font-medium"></div>
+              </div>
+
+              <div class="pipeline-step flex items-center p-3 bg-gray-100 rounded-lg" data-step="5">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center mr-3">5</div>
+                <div class="flex-grow">
+                  <h4 class="font-medium">Blacklist-Prüfung</h4>
+                  <p class="text-sm text-gray-600">Vergleich mit gesperrten IBANs</p>
+                </div>
+                <div class="step-status text-sm font-medium"></div>
+              </div>
+            </div>
+
+            <div id="stepDetails" class="mt-6 p-4 bg-gray-50 rounded-lg min-h-[100px] text-center text-gray-600">
+              Starten Sie die Simulation, um Details zu sehen.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results + Chart -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-xl font-semibold mb-4 flex items-center"><i data-lucide="file-text" class="w-5 h-5 mr-2"></i> Simulationsergebnisse</h3>
+          <div id="resultsPanel" class="space-y-4">
+            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+              <span class="font-medium">Verarbeitungszeit</span>
+              <span id="processingTime" class="text-blue-600 font-semibold">-</span>
+            </div>
+            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+              <span class="font-medium">Gefundene IBANs</span>
+              <span id="foundIbans" class="text-blue-600 font-semibold">-</span>
+            </div>
+            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+              <span class="font-medium">Blacklist-Treffer</span>
+              <span id="blacklistHits" class="text-blue-600 font-semibold">-</span>
+            </div>
+            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+              <span class="font-medium">HTTP-Status</span>
+              <span id="httpStatus" class="text-blue-600 font-semibold">-</span>
+            </div>
+          </div>
+
+          <div id="ibanDetails" class="mt-6 hidden">
+            <h4 class="font-medium mb-2">Gefundene IBANs:</h4>
+            <div id="ibanList" class="space-y-2"></div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-xl font-semibold mb-4 flex items-center"><i data-lucide="bar-chart-2" class="w-5 h-5 mr-2"></i> Leistungsmetriken</h3>
+          <div class="chart-container">
+            <canvas id="performanceChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Architecture -->
+      <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h3 class="text-xl font-semibold mb-4 flex items-center"><i data-lucide="layers" class="w-5 h-5 mr-2"></i> Architektur-Übersicht</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-blue-50 p-4 rounded-lg">
+            <h4 class="font-medium text-blue-800 mb-2">Controller</h4>
+            <p class="text-sm text-gray-700">REST-Endpunkt für <code class="bg-blue-100 px-1 rounded">/api/scan</code>, Validierung.</p>
+            <div class="mt-2 text-xs font-mono bg-blue-100 p-2 rounded">POST /api/scan<br>{ "url": "..." }</div>
+          </div>
+          <div class="bg-green-50 p-4 rounded-lg">
+            <h4 class="font-medium text-green-800 mb-2">Service</h4>
+            <p class="text-sm text-gray-700">Orchestrierung; WebClient für Download.</p>
+            <div class="mt-2 text-xs font-mono bg-green-100 p-2 rounded">WebClient.get()<br>PdfTextExtractor</div>
+          </div>
+          <div class="bg-yellow-50 p-4 rounded-lg">
+            <h4 class="font-medium text-yellow-800 mb-2">Checks</h4>
+            <p class="text-sm text-gray-700">Chain-of-Responsibility für Prüfungen.</p>
+            <div class="mt-2 text-xs font-mono bg-yellow-100 p-2 rounded">DocumentCheck<br>IbanBlacklistCheck</div>
+          </div>
+          <div class="bg-purple-50 p-4 rounded-lg">
+            <h4 class="font-medium text-purple-800 mb-2">Utilities</h4>
+            <p class="text-sm text-gray-700">IBAN & PDF-Hilfsklassen.</p>
+            <div class="mt-2 text-xs font-mono bg-purple-100 p-2 rounded">IbanValidator<br>PdfTextExtractor</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Learning Path -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-xl font-semibold mb-4 flex items-center"><i data-lucide="map" class="w-5 h-5 mr-2"></i> Lernpfad</h3>
+        <div class="space-y-6" id="learningList">
+          <!-- Buttons render via JS content (same as dein Original) -->
+          <div class="flex">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center mr-4">1</div>
+            <div>
+              <h4 class="font-medium">Grundlagen: PDF-Verarbeitung</h4>
+              <p class="text-gray-600 mt-1">PDFBox, Extraktion & Stolpersteine</p>
+              <button class="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center" onclick="showLearningStep(1)">
+                <i data-lucide="chevron-right" class="w-4 h-4 mr-1"></i> Mehr erfahren
+              </button>
+            </div>
+          </div>
+
+          <div class="flex">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center mr-4">2</div>
+            <div>
+              <h4 class="font-medium">IBAN-Validierung: Regex & Checksumme</h4>
+              <p class="text-gray-600 mt-1">Erkennung + Mod-97</p>
+              <button class="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center" onclick="showLearningStep(2)">
+                <i data-lucide="chevron-right" class="w-4 h-4 mr-1"></i> Mehr erfahren
+              </button>
+            </div>
+          </div>
+
+          <div class="flex">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center mr-4">3</div>
+            <div>
+              <h4 class="font-medium">Blacklist-Prüfung: Sicherheit</h4>
+              <p class="text-gray-600 mt-1">Effiziente Implementierung</p>
+              <button class="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center" onclick="showLearningStep(3)">
+                <i data-lucide="chevron-right" class="w-4 h-4 mr-1"></i> Mehr erfahren
+              </button>
+            </div>
+          </div>
+
+          <div class="flex">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center mr-4">4</div>
+            <div>
+              <h4 class="font-medium">Fehlerbehandlung: Robustheit</h4>
+              <p class="text-gray-600 mt-1">Statuscodes & Kategorien</p>
+              <button class="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center" onclick="showLearningStep(4)">
+                <i data-lucide="chevron-right" class="w-4 h-4 mr-1"></i> Mehr erfahren
+              </button>
+            </div>
+          </div>
+
+          <div class="flex">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center mr-4">5</div>
+            <div>
+              <h4 class="font-medium">Erweiterbarkeit: CoR-Pattern</h4>
+              <p class="text-gray-600 mt-1">Neue Checks ohne Core-Änderung</p>
+              <button class="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center" onclick="showLearningStep(5)">
+                <i data-lucide="chevron-right" class="w-4 h-4 mr-1"></i> Mehr erfahren
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal -->
+      <div id="learningModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+              <h4 id="learningModalTitle" class="text-xl font-semibold"></h4>
+              <button onclick="closeLearningModal()" class="text-gray-500 hover:text-gray-700">
+                <i data-lucide="x" class="w-6 h-6"></i>
+              </button>
+            </div>
+            <div id="learningModalContent" class="text-gray-700"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- SCRIPTS -->
+  <script>
+    // Icons
+    lucide.createIcons();
+
+    // Tab handling
+    const sectionOverview = document.getElementById('section-overview');
+    const sectionSim = document.getElementById('section-sim');
+    const tabOverview = document.getElementById('tab-overview');
+    const tabSim = document.getElementById('tab-sim');
+
+    function activateTab(which) {
+      if (which === 'overview') {
+        sectionOverview.classList.remove('hidden');
+        sectionOverview.classList.add('fade-enter', 'fade-enter-active');
+        sectionSim.classList.add('hidden');
+
+        tabOverview.classList.add('bg-blue-600', 'text-white');
+        tabSim.classList.remove('bg-blue-600', 'text-white');
+        tabSim.classList.add('hover:bg-gray-100');
+      } else {
+        sectionSim.classList.remove('hidden');
+        sectionSim.classList.add('fade-enter', 'fade-enter-active');
+        sectionOverview.classList.add('hidden');
+
+        tabSim.classList.add('bg-blue-600', 'text-white');
+        tabOverview.classList.remove('bg-blue-600', 'text-white');
+        tabOverview.classList.add('hover:bg-gray-100');
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    tabOverview.addEventListener('click', () => activateTab('overview'));
+    tabSim.addEventListener('click', () => activateTab('sim'));
+
+    // Copy buttons for curl
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = document.querySelector(btn.getAttribute('data-copy'));
+        const text = target.innerText;
+        navigator.clipboard.writeText(text).then(() => toast('In Zwischenablage kopiert', 'success'))
+          .catch(() => toast('Kopieren fehlgeschlagen', 'error'));
+      });
+    });
+
+    // Toast helper
+    function toast(message, type='success') {
+      const el = document.createElement('div');
+      el.className = `fixed top-4 right-4 z-[9999] text-white px-4 py-2 rounded shadow ${
+        type==='success' ? 'bg-green-600' : 'bg-red-600'
+      }`;
+      el.textContent = message;
+      document.body.appendChild(el);
+      setTimeout(()=> el.remove(), 2500);
+    }
+
+    // ===== Simulation JS (aus deiner ersten Datei, leicht gestrafft) =====
+    let performanceChart = null;
+
+    const sampleIbans = [
+      "DE44500105175407324931",
+      "DE89370400440532013000",
+      "DE12500105170648489890",
+      "DE38300105105177035932"
+    ];
+
+    const learningContent = {
+      1:{ title:"Grundlagen: PDF-Verarbeitung", content: `
+        <h4 class="font-medium text-lg mb-3">PDF-Textextraktion mit Apache PDFBox</h4>
+        <p class="mb-3">Open-Source-Bibliothek zur Verarbeitung von PDF-Dokumenten. Hier genutzt, um Text aus Rechnungen zu extrahieren.</p>
+        <h5 class="font-medium mb-2">Vorteile:</h5>
+        <ul class="list-disc pl-5 mb-4 space-y-1">
+          <li>Kostenlos & Open Source</li><li>Gute Textextraktion</li><li>Leichtgewichtig</li>
+        </ul>
+        <h5 class="font-medium mb-2">Herausforderungen:</h5>
+        <ul class="list-disc pl-5 mb-4 space-y-1">
+          <li>Scans benötigen OCR</li><li>Unterschiedliche PDF-Layouts</li><li>Performance bei großen Dateien</li>
+        </ul>
+        <div class="bg-gray-100 p-4 rounded-lg mt-4">
+          <p class="font-mono text-sm">try (var pdDoc = PDDocument.load(pdfBytes)) {<br>
+          &nbsp;&nbsp;return new PDFTextStripper().getText(pdDoc);<br>
+          } catch (IOException e) {<br>
+          &nbsp;&nbsp;throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Invalid PDF", e);<br>
+          }</p>
+        </div>`},
+      2:{ title:"IBAN-Validierung: Regex & Checksumme", content: `
+        <h4 class="font-medium text-lg mb-3">Zweistufige Validierung</h4>
+        <h5 class="font-medium mb-2">1) Regex:</h5>
+        <p class="mb-2"><code class="bg-gray-100 px-1 rounded">\\b[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}\\b</code></p>
+        <h5 class="font-medium mb-2">2) Mod-97:</h5>
+        <ol class="list-decimal pl-5 mb-4 space-y-1">
+          <li>Erste 4 Zeichen ans Ende</li><li>A=10, B=11, ...</li><li>Große Zahl mod 97</li><li>Ergebnis muss 1 sein</li>
+        </ol>
+        <div class="bg-gray-100 p-4 rounded-lg mt-4">
+          <p class="font-mono text-sm">static boolean isValidIban(String iban) { /* ... */ }</p>
+        </div>`},
+      3:{ title:"Blacklist-Prüfung: Sicherheit", content: `
+        <h4 class="font-medium text-lg mb-3">Effizient & sicher</h4>
+        <ul class="list-disc pl-5 mb-4 space-y-1">
+          <li>HashSet für O(1) Lookups</li><li>Normalisierung (Trim/Spaces)</li><li>Regelmäßige Updates</li>
+        </ul>
+        <div class="bg-gray-100 p-4 rounded-lg mt-4">
+          <p class="font-mono text-sm">IbanBlacklistCheck(ResourceLoader loader) { /* ... */ }</p>
+        </div>
+        <p class="mt-3">HTTP <code class="bg-gray-100 px-1 rounded">409 Conflict</code> bei Blacklist-Treffern.</p>`},
+      4:{ title:"Fehlerbehandlung: Robustheit", content: `
+        <h4 class="font-medium text-lg mb-3">Kategorien & Statuscodes</h4>
+        <ul class="list-disc pl-5 mb-4 space-y-1">
+          <li>4xx: Clientfehler</li><li>5xx: Server/Upstream</li><li>409: Geschäftsregel</li><li>Timeouts</li>
+        </ul>
+        <table class="min-w-full bg-white border border-gray-200 mb-4 text-sm">
+          <thead><tr class="bg-gray-100"><th class="py-2 px-3 border-b text-left">Status</th><th class="py-2 px-3 border-b text-left">Situation</th></tr></thead>
+          <tbody>
+            <tr><td class="py-2 px-3 border-b">200 OK</td><td class="py-2 px-3 border-b">Alles i.O.</td></tr>
+            <tr><td class="py-2 px-3 border-b">400 Bad Request</td><td class="py-2 px-3 border-b">Ungültige URL/Parameter</td></tr>
+            <tr><td class="py-2 px-3 border-b">422 Unprocessable Entity</td><td class="py-2 px-3 border-b">PDF nicht verarbeitbar</td></tr>
+            <tr><td class="py-2 px-3 border-b">409 Conflict</td><td class="py-2 px-3 border-b">Blacklist-Treffer</td></tr>
+            <tr><td class="py-2 px-3 border-b">502 Bad Gateway</td><td class="py-2 px-3 border-b">Upstream failed</td></tr>
+            <tr><td class="py-2 px-3 border-b">504 Gateway Timeout</td><td class="py-2 px-3 border-b">Timeout beim Download</td></tr>
+          </tbody>
+        </table>`},
+      5:{ title:"Erweiterbarkeit: Chain-of-Responsibility", content: `
+        <h4 class="font-medium text-lg mb-3">Neue Checks ohne Core-Änderung</h4>
+        <div class="bg-gray-100 p-4 rounded-lg mb-4">
+          <p class="font-mono text-sm">public interface DocumentCheck { /* name, evaluate, record */ }</p>
+        </div>
+        <ul class="list-disc pl-5 mb-4 space-y-1">
+          <li>VAT-ID Check</li><li>Amount-Validation</li><li>Supplier-Name-Check</li><li>Duplicate-Detection</li>
+        </ul>`}
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Default: Übersicht aktiv
+      activateTab('overview');
+
+      // Sliders
+      const maxPdfSizeSlider = document.getElementById('maxPdfSize');
+      const maxPdfSizeValue = document.getElementById('maxPdfSizeValue');
+      const timeoutSlider = document.getElementById('timeout');
+      const timeoutValue = document.getElementById('timeoutValue');
+      const runButton = document.getElementById('runSimulation');
+      const resetButton = document.getElementById('resetSimulation');
+
+      maxPdfSizeSlider?.addEventListener('input', function(){ maxPdfSizeValue.textContent = this.value + ' MB'; });
+      timeoutSlider?.addEventListener('input', function(){ timeoutValue.textContent = this.value + 's'; });
+
+      runButton?.addEventListener('click', runSimulation);
+      resetButton?.addEventListener('click', resetSimulation);
+
+      initPerformanceChart();
+    });
+
+    function initPerformanceChart(){
+      try{
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        performanceChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['PDF-Download', 'Text-Extraktion', 'IBAN-Erkennung', 'IBAN-Validierung', 'Blacklist-Prüfung'],
+            datasets: [{
+              label: 'Verarbeitungszeit (ms)',
+              data: [0,0,0,0,0],
+              backgroundColor: [
+                'rgba(59, 130, 246, .7)',
+                'rgba(16, 185, 129, .7)',
+                'rgba(245, 158, 11, .7)',
+                'rgba(139, 92, 246, .7)',
+                'rgba(239, 68, 68, .7)'
+              ],
+              borderColor: [
+                'rgb(59,130,246)',
+                'rgb(16,185,129)',
+                'rgb(245,158,11)',
+                'rgb(139,92,246)',
+                'rgb(239,68,68)'
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            maintainAspectRatio:false,
+            responsive:true,
+            scales:{ y:{ beginAtZero:true, title:{ display:true, text:'Zeit (ms)'} } },
+            plugins:{ legend:{ display:false }, title:{ display:true, text:'Zeitverteilung der Verarbeitungsschritte' } }
+          }
+        });
+      }catch(e){ console.error('Chart init error', e); }
+    }
+
+    function runSimulation(){
+      try{
+        resetSimulation();
+
+        const pdfUrl = document.getElementById('pdfUrl').value.trim();
+        const maxPdfSize = document.getElementById('maxPdfSize').value;
+        const timeout = document.getElementById('timeout').value;
+        const regexCheck = document.getElementById('regexCheck').checked;
+        const checksumCheck = document.getElementById('checksumCheck').checked;
+        const blacklistIbans = document.getElementById('blacklistIbans').value
+          .split('\n').map(s=>s.trim()).filter(Boolean);
+
+        if(!pdfUrl){ return showError('Bitte geben Sie eine PDF-URL ein.'); }
+        if(!/^https?:\/\//.test(pdfUrl)){ return showError('Die URL muss mit http:// oder https:// beginnen.'); }
+
+        simulateStep(1, pdfUrl, maxPdfSize, timeout, regexCheck, checksumCheck, blacklistIbans);
+      }catch(e){
+        console.error('runSimulation error', e);
+        showError('Ein Fehler ist aufgetreten: ' + e.message);
+      }
+    }
+
+    function simulateStep(step, pdfUrl, maxPdfSize, timeout, regexCheck, checksumCheck, blacklistIbans){
+      const stepElement = document.querySelector(`.pipeline-step[data-step="${step}"]`);
+      const stepDetails = document.getElementById('stepDetails');
+      stepElement.classList.add('active');
+
+      const processingTimes = [800, 600, 400, 300, 200];
+      const processingTime = processingTimes[step-1] + Math.random()*200;
+
+      let html='';
+      if(step===1){
+        html = `<h3 class="font-medium text-lg mb-2">Schritt 1: PDF-Download</h3>
+        <p class="mb-2">URL: <code class="bg-gray-100 px-1 rounded">${pdfUrl}</code></p>
+        <p class="mb-2">Maximale Größe: ${maxPdfSize} MB · Timeout: ${timeout}s</p>
+        <div class="bg-blue-50 p-3 rounded-lg mt-2 text-sm">Download via WebClient mit Fehlerbehandlung (4xx/5xx/Timeout).</div>`;
+      } else if(step===2){
+        html = `<h3 class="font-medium text-lg mb-2">Schritt 2: Text-Extraktion</h3>
+        <p class="mb-2">Apache PDFBox extrahiert Text – Beispielgröße: ${(Math.random()*2+0.5).toFixed(2)} MB</p>
+        <div class="bg-green-50 p-3 rounded-lg mt-2 text-sm">Für Scans wäre OCR (z.B. Tesseract) erforderlich.</div>`;
+      } else if(step===3){
+        html = `<h3 class="font-medium text-lg mb-2">Schritt 3: IBAN-Erkennung</h3>
+        <p class="mb-2">Regex-Prüfung: ${regexCheck ? 'Aktiviert' : 'Deaktiviert'}</p>
+        <div class="bg-yellow-50 p-3 rounded-lg mt-2 text-sm">
+          Regex <code class="bg-gray-100 px-1 rounded">\\b[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}\\b</code> findet Kandidaten.
+        </div>`;
+      } else if(step===4){
+        html = `<h3 class="font-medium text-lg mb-2">Schritt 4: IBAN-Validierung</h3>
+        <p class="mb-2">Mod-97-Checksumme: ${checksumCheck ? 'Aktiviert' : 'Deaktiviert'}</p>
+        <div class="bg-purple-50 p-3 rounded-lg mt-2 text-sm">Verhindert False Positives.</div>`;
+      } else if(step===5){
+        html = `<h3 class="font-medium text-lg mb-2">Schritt 5: Blacklist-Prüfung</h3>
+        <p class="mb-2">Blacklist-IBANs: ${blacklistIbans.length}</p>
+        <div class="bg-red-50 p-3 rounded-lg mt-2 text-sm">Treffer → HTTP 409 (Conflict).</div>`;
+      }
+      stepDetails.innerHTML = html;
+
+      setTimeout(()=>{
+        stepElement.classList.remove('active');
+        stepElement.classList.add('completed');
+        stepElement.querySelector('.step-status').textContent = '✓';
+
+        if(performanceChart){
+          performanceChart.data.datasets[0].data[step-1] = Math.round(processingTime);
+          performanceChart.update();
+        }
+        if(step<5){
+          simulateStep(step+1, pdfUrl, maxPdfSize, timeout, regexCheck, checksumCheck, blacklistIbans);
+        } else {
+          finishSimulation(blacklistIbans);
+        }
+      }, processingTime);
+    }
+
+    function finishSimulation(blacklistIbans){
+      try{
+        const foundIbans = sampleIbans.slice(0, Math.floor(Math.random()*3)+1);
+        const blacklistHits = foundIbans.filter(i=> blacklistIbans.includes(i));
+        const processingTime = performanceChart.data.datasets[0].data.reduce((a,b)=>a+b,0);
+        const httpStatus = blacklistHits.length>0 ? 409 : 200;
+
+        document.getElementById('processingTime').textContent = processingTime + ' ms';
+        document.getElementById('foundIbans').textContent = foundIbans.length;
+        document.getElementById('blacklistHits').textContent = blacklistHits.length;
+
+        const httpEl = document.getElementById('httpStatus');
+        httpEl.textContent = httpStatus + (httpStatus===200 ? ' OK' : ' Conflict');
+        httpEl.classList.toggle('text-green-600', httpStatus===200);
+        httpEl.classList.toggle('text-red-600', httpStatus!==200);
+
+        const ibanDetails = document.getElementById('ibanDetails');
+        const ibanList = document.getElementById('ibanList');
+
+        if(foundIbans.length){
+          ibanDetails.classList.remove('hidden');
+          ibanList.innerHTML = '';
+          foundIbans.forEach(iban=>{
+            const hit = blacklistHits.includes(iban);
+            const row = document.createElement('div');
+            row.className = `flex justify-between items-center p-2 rounded ${hit?'bg-red-50':'bg-green-50'}`;
+            row.innerHTML = `<span class="font-mono">${iban}</span>
+              <span class="text-sm ${hit?'text-red-600':'text-green-600'}">
+                ${hit?'Blacklisted':'Valid'}
+              </span>`;
+            ibanList.appendChild(row);
+          });
+        } else {
+          ibanDetails.classList.add('hidden');
+        }
+        showSuccess('Simulation erfolgreich abgeschlossen!');
+      }catch(e){
+        console.error('finishSimulation error', e);
+        showError('Ein Fehler ist aufgetreten: ' + e.message);
+      }
+    }
+
+    function resetSimulation(){
+      try{
+        document.querySelectorAll('.pipeline-step').forEach(s=>{
+          s.classList.remove('active','completed','error');
+          s.querySelector('.step-status').textContent = '';
+        });
+        document.getElementById('stepDetails').innerHTML = 'Starten Sie die Simulation, um Details zu sehen.';
+        document.getElementById('processingTime').textContent='-';
+        document.getElementById('foundIbans').textContent='-';
+        document.getElementById('blacklistHits').textContent='-';
+        const http = document.getElementById('httpStatus');
+        http.textContent='-';
+        http.className='text-blue-600 font-semibold';
+        document.getElementById('ibanDetails').classList.add('hidden');
+
+        if(performanceChart){
+          performanceChart.data.datasets[0].data=[0,0,0,0,0];
+          performanceChart.update();
+        }
+      }catch(e){ console.error('resetSimulation error', e); }
+    }
+
+    function showSuccess(msg){ toast(msg,'success'); }
+    function showError(msg){ toast(msg,'error'); }
+
+    // Learning modal
+    function showLearningStep(step){
+      try{
+        const modal = document.getElementById('learningModal');
+        document.getElementById('learningModalTitle').textContent = learningContent[step].title;
+        document.getElementById('learningModalContent').innerHTML = learningContent[step].content;
+        modal.classList.remove('hidden');
+      }catch(e){ console.error('learning step error', e); showError(e.message); }
+    }
+    function closeLearningModal(){ document.getElementById('learningModal').classList.add('hidden'); }
+    window.showLearningStep = showLearningStep;
+    window.closeLearningModal = closeLearningModal;
+
+    // Console proxy (wie in deiner Vorlage)
+    window.parent?.postMessage?.({ action: "ready" }, "*");
+    window.console = new Proxy(console, {
+      get(target, prop) {
+        if (['log','warn','error'].includes(prop)) {
+          return new Proxy(target[prop], {
+            apply(fn, thisArg, args) {
+              fn.apply(thisArg, args);
+              try{
+                window.parent.postMessage({ action:'console', type:prop,
+                  args: args.map(a=>{ try{return JSON.stringify(a).replace(/^["']|["']$/g,'');} catch{ return a; } })
+                }, '*');
+              }catch(_){}
+            }
+          });
+        }
+        return target[prop];
+      }
+    });
+  </script>
 </body>
-
 </html>

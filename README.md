@@ -2,13 +2,19 @@
 
 Ein Java-Service mit Spring Boot, der PDF-Rechnungen auf gesperrte IBANs prüft – zur Vorbeugung von Geldwäsche durch automatische Dokumentenanalyse.
 
-🌐 **Live-Demo Deployment**:  
-Das Projekt ist online verfügbar unter:
+## 🌐 Live-Demo
 
-🔗 **https://invoice-scanner-service.onrender.com**
+- **Web-UI (index.html):**  
+  - Live: **https://invoice-scanner-service.onrender.com/**  
+  - Lokal: **http://localhost:8080/**  
+  Die Startseite (`src/main/resources/static/index.html`) bietet zwei Tabs:
+  - **Übersicht**: Kurz-Doku, Beispiel-PDFs, `curl`-Snippets (mit Kopier-Button)
+  - **Simulation**: Interaktive Pipeline (PDF-Download → Textextraktion → IBAN-Erkennung → Checksumme → Blacklist)
 
-👉 Du kannst dort direkt die API testen – z. B. per `curl`:
+- **API-Endpunkt:**  
+  `POST /scan`
 
+### Schnelltest per `curl`
 ```bash
 curl -X POST https://invoice-scanner-service.onrender.com/scan \
   -H "Content-Type: application/json" \
